@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/perl -w
 use strict;
 use lib "/home/hosting_locumtest/usr/local/lib/perl5";
 use Mojolicious::Lite;
