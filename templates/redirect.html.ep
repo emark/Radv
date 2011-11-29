@@ -1,0 +1,17 @@
+% layout 'default';
+% title 'Переход на внешний сайт...';
+
+Вебпокупка.Редирект
+%foreach my $id(keys %{$advert}){
+  <%=form_for "http://$advert->{$id}{'link'}"=>(method=>'get',target=>'_blank')=>begin%>
+  <%=$advert->{$id}{'text'}%>
+  <%=submit_button%>
+  <%end%>
+  <br/>
+%}
+%foreach my $id(keys %{$company}){
+  Интернет-магазин <%=$company->{$id}{'company'}%><br/>
+  Юридическое лицо: <%=$company->{$id}{'org'}%><br/>
+  ОГРН: <%=$company->{$id}{'ogrn'}%><br/>
+  Для перехода в магазин нажмите на ссылку <%=link_to "http://$company->{$id}{'url'}"=>"http://$company->{$id}{'url'}"%> <br/>
+%}

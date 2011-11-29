@@ -1,0 +1,7 @@
+% layout 'default';
+% title 'Links index';
+<pre>
+%foreach my $id(keys %{$index}){
+  <%=link_to 'link'=>$index->{$id}{'id'}%> <%=$index->{$id}{'company'}%> <%=$index->{$id}{'cat'}%><br/>
+%}
+</pre>

@@ -1,0 +1,47 @@
+#!/usr/bin/env perl -w
+use strict;
+use lib "/home/hosting_locumtest/usr/local/lib/perl5";
+use Mojolicious::Lite;
+use DBI;
+
+open (DBCONF,"< db.conf") || die "Error open dbconfig file";
+my @appconf=<DBCONF>;
+close DBCONF;
+chomp @appconf;
+our $dbh = DBI->connect($appconf[0],$appconf[1],$appconf[2],
+			{ PrintError => 1, RaiseError => 1 });
+$dbh->{'mysql_enable_utf8'} = 1;
+$dbh->do('SET NAMES utf8');
+
+app->hook(before_dispatch => sub {
+               my $self = shift;
+               $self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
+	       }
+	  );
+app->secret($appconf[3]);
+
+get '/i/' => sub {
+  my $self = shift;
+  my $index=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.till,ADVERT.text,ADVERT.link,CATEGORY.name as cat FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id",'id');
+  $self->stash(index=>$index);
+  $self->render('index');
+};
+
+get '/r/' => sub {
+  my $self = shift;
+  my $index=$dbh->selectall_hashref("SELECT LINKS.id,COMPANYREF.FNAME as company,CATEGORY.name as cat FROM COMPANYREF INNER JOIN LINKS ON COMPANYREF.ID=LINKS.companyid LEFT JOIN CATEGORY ON LINKS.catid=CATEGORY.id",'id');
+  $self->stash(index=>$index);
+  $self->render('links');
+};
+
+get '/r/:id'=>sub{
+  my $self=shift;
+  my $linkid=$self->param('id');
+  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id as id,ADVERT.text as text,ADVERT.link as link FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid WHERE LINKS.id=$linkid",'id');
+  my $company=$dbh->selectall_hashref("SELECT  COMPANYREF.ID as id,COMPANYREF.ORGANIZATION as org,COMPANYREF.OGRN as ogrn,COMPANYREF.FNAME as company,COMPANYREF.URL as url, FROM COMPANYREF INNER JOIN LINKS ON COMPANYREF.ID=LINKS.companyid WHERE LINKS.id=$linkid",'id');
+  $self->stash(advert=>$advert,
+               company=>$company);
+  $self->render('redirect');
+};
+
+app->start;
