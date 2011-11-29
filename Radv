@@ -20,6 +20,10 @@ app->hook(before_dispatch => sub {
 	  );
 app->secret($appconf[3]);
 
+get '/'=>sub{
+  shift->render(text=>'RedirectADvert coming soon');
+  };
+
 get '/i/' => sub {
   my $self = shift;
   my $index=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.till,ADVERT.text,ADVERT.link,CATEGORY.name as cat FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id",'id');
