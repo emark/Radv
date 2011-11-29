@@ -21,7 +21,7 @@ app->hook(before_dispatch => sub {
 app->secret($appconf[3]);
 
 get '/'=>sub{
-  shift->render(text=>'RedirectADvert coming soon');
+  shift->render(text=>'RedirectADvert coming soon. Please be patient. emark@web2buy.ru');
   };
 
 get '/i/' => sub {
