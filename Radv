@@ -15,7 +15,7 @@ $dbh->do('SET NAMES utf8');
 
 app->hook(before_dispatch => sub {
                my $self = shift;
-               #$self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
+               $self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
 	       }
 	  );
 app->secret($appconf[3]);
