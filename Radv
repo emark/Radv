@@ -21,7 +21,7 @@ app->hook(before_dispatch => sub {
 app->secret($appconf[3]);
 
 get '/'=>sub{
-  shift->render(text=>'RedirectADvert coming soon. Please be patient. emark@web2buy.ru');
+  shift->render(text=>'RedirectADvert. Contact us at emark@web2buy.ru');
   };
 
 get '/i/' => sub {
@@ -42,7 +42,11 @@ get '/r/:id'=>sub{
   my $self=shift;
   my $linkid=$self->param('id');
   my $advert=$dbh->selectall_hashref("SELECT ADVERT.id as id,ADVERT.text as text,ADVERT.link as link FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid WHERE LINKS.id=$linkid",'id');
-  my $company=$dbh->selectall_hashref("SELECT  COMPANYREF.ID as id,COMPANYREF.ORGANIZATION as org,COMPANYREF.OGRN as ogrn,COMPANYREF.FNAME as company,COMPANYREF.URL as url, FROM COMPANYREF INNER JOIN LINKS ON COMPANYREF.ID=LINKS.companyid WHERE LINKS.id=$linkid",'id');
+  my $company=$dbh->selectall_hashref("SELECT  COMPANYREF.ID as id,COMPANYREF.ORGANIZATION as org,COMPANYREF.OGRN as ogrn,COMPANYREF.FNAME as company,
+                                      COMPANYREF.URL as url,COMPANYREF.DT_MAIL as dt_mail,COMPANYREF.DT_CC as dt_cc,COMPANYREF.DT_TC as dt_tc,COMPANYREF.DT_CR as dt_cr,COMPANYREF.DT_PP as dt_pp,
+                                      COMPANYREF.PT_BP as pt_bp,COMPANYREF.PT_EM as pt_em,COMPANYREF.PT_CH as pt_ch,COMPANYREF.PT_PM as pt_pm,COMPANYREF.PT_BC as pt_bc,COMPANYREF.PT_TP as pt_tp,
+                                      DATE_FORMAT(COMPANYREF.SYSDATE,'%d.%m.%Y') as updateinfo,COMPANYREF.GOODBACKDAYS as refund
+                                      FROM COMPANYREF INNER JOIN LINKS ON COMPANYREF.ID=LINKS.companyid WHERE LINKS.id=$linkid",'id');
   $self->stash(advert=>$advert,
                company=>$company);
   $self->render('redirect');

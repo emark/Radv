@@ -1,17 +1,61 @@
 % layout 'default';
 % title 'Переход на внешний сайт...';
 
-Вебпокупка.Редирект
+<table boredr=0>
+  <tr>
+    <td>Вебпокупка</td>
+    <td class=infoblock>
 %foreach my $id(keys %{$advert}){
-  <%=form_for "http://$advert->{$id}{'link'}"=>(method=>'get',target=>'_blank')=>begin%>
-  <%=$advert->{$id}{'text'}%>
-  <%=submit_button%>
-  <%end%>
-  <br/>
+  <i><%=$advert->{$id}{'text'}%>
+  <a href="http://test/cgi-bin/tools/ustat.pl?url=<%=$advert->{$id}{'link'}%>" target=_blank title='Откроется в новом окне'>Узнать больше</a>&nbsp;&#8594;</i>
 %}
+    </td>
+  </tr>
+</table>
+<div id=shopinfo>
+%my %extinfo=('ПР'=>'Почта Росии',
+%	 'КК'=>'Курьерские компании',
+%	 'ТК'=>'Транспортные компании',
+%	 'К'=>'Штатный курьер',
+%	 'СЗ'=>'Самовывоз',
+%	 'БП'=>'Банковский перевод',
+%	 'ЭД'=>'Электронные деньги',
+%	 'Н'=>'Платеж наличными средствами',
+%	 'НП'=>'Наложенный платеж',
+%	 'БК'=>'Банковские карты',
+%	 'ТО'=>'Терминалы оплаты');
+%my @dalias=('ПР','КК','ТК','К','СЗ');
+%my @palias=('БП','ЭД','Н','НП','БК','ТО');
+%my @dtypes=();
+%my @ptypes=();
 %foreach my $id(keys %{$company}){
-  Интернет-магазин <%=$company->{$id}{'company'}%><br/>
-  Юридическое лицо: <%=$company->{$id}{'org'}%><br/>
+  <p class=caption>Детальная информация</p>
+  %@dtypes=($company->{$id}{'dt_mail'},$company->{$id}{'dt_cc'},$company->{$id}{'dt_tc'},$company->{$id}{'dt_cr'},$company->{$id}{'dt_pp'});
+  %@ptypes=($company->{$id}{'pt_bp'},$company->{$id}{'pt_em'},$company->{$id}{'pt_ch'},$company->{$id}{'pt_pm'},$company->{$id}{'pt_bc'},$company->{$id}{'pt_tp'});
+  Интернет-магазин <%=$company->{$id}{'org'}%><br/>
+  Юридическое лицо: <%=$company->{$id}{'company'}%><br/>
   ОГРН: <%=$company->{$id}{'ogrn'}%><br/>
-  Для перехода в магазин нажмите на ссылку <%=link_to "http://$company->{$id}{'url'}"=>"http://$company->{$id}{'url'}"%> <br/>
+  %if($company->{$id}{'refund'}){
+    <p>Возврат товара надлежащего качества в течении <%=$company->{$id}{'refund'}%> дн.</p>
+  %}
+  <p class=caption><b>Доставка:</b>
+  <ul>
+% my $n=0;
+% foreach my $key(@dtypes){
+%   if($key){
+      <li><%=$extinfo{$dalias[$n]}%>
+    %}
+  %$n++;}
+  </ul></p>
+  <p class=caption><b>Оплата:</b>
+  <ul>
+% $n=0;
+% foreach my $key(@ptypes){
+%   if($key){
+      <li><%=$extinfo{$palias[$n]}%>
+    %}
+  %$n++;}
+  </ul></p>
+  Для перехода в магазин нажмите на ссылку <%=link_to "http://$company->{$id}{'url'}"=>"http://$company->{$id}{'url'}"=>(title=>'Откроется в этом же окне')%> <br/>
+  <p>Информация обновлена <%=$company->{$id}{'updateinfo'}%></p>
 %}
