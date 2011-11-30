@@ -15,7 +15,7 @@ $dbh->do('SET NAMES utf8');
 
 app->hook(before_dispatch => sub {
                my $self = shift;
-               $self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
+               #$self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
 	       }
 	  );
 app->secret($appconf[3]);
@@ -24,24 +24,91 @@ get '/'=>sub{
   shift->render(text=>'RedirectADvert. Contact us at emark@web2buy.ru');
   };
 
-get '/i/' => sub {
+get '/login' => sub {
   my $self = shift;
-  my $index=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.till,ADVERT.text,ADVERT.link,CATEGORY.name as cat FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id",'id');
-  $self->stash(index=>$index);
-  $self->render('index');
+  $self->stash(msg=>'Enter your passphrase here');
+  $self->render('login');
 };
 
-get '/r/' => sub {
+get '/logout' => sub {
   my $self = shift;
-  my $index=$dbh->selectall_hashref("SELECT LINKS.id,COMPANYREF.FNAME as company,CATEGORY.name as cat FROM COMPANYREF INNER JOIN LINKS ON COMPANYREF.ID=LINKS.companyid LEFT JOIN CATEGORY ON LINKS.catid=CATEGORY.id",'id');
-  $self->stash(index=>$index);
-  $self->render('links');
+  $self->session(usr=>'');
+  $self->stash(msg=>'You are successfully logout');
+  $self->render('login');
+};
+
+post '/auth'=>sub{
+  my $self=shift;
+  my $pass=$self->param('pass') || '';
+  if($pass eq $appconf[4]){
+    $self->session(usr=>$pass);
+    return $self->redirect_to('list');
+  }
+  $self->stash(msg=>'Wrong passphrase');
+  $self->render('login');
+};
+
+get '/list'=>sub{
+  my $self=shift;
+  my $usr=$self->session('usr') || '';
+  return $self->redirect_to('login') unless $usr;
+  my $adverts=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.text,ADVERT.till,ADVERT.link FROM ADVERT",'id');
+  $self->stash(adverts=>$adverts);
+  $self->render('list');
+};
+
+post '/list'=>sub{
+  my $self=shift;
+  my $usr=$self->session('usr') || '';
+  return $self->redirect_to('login') unless $usr;
+  my $id=$self->param('id');
+  my $till=$self->param('till');
+  my $text=$self->param('text');
+  my $link=$self->param('link');
+  my $del=$self->param('del');
+  my @category=$self->param('category');
+  if($del && $id){
+    $dbh->do("DELETE FROM ADVERT WHERE id=$id");
+    $id=0;
+  }elsif($id){
+    $dbh->do("UPDATE ADVERT SET till=\"$till\",text=\"$text\",link=\"$link\" WHERE id=$id");
+  }else{
+    $dbh->do("INSERT INTO ADVERT(id,till,text,link) VALUES(NULL,\"$till\",\"$text\",\"$link\")");
+    $id=$dbh->last_insert_id('','',"ADVERT",'id');
+  }
+  #Update router links
+  if($id && @category){
+    $dbh->do("DELETE FROM ROUTER WHERE advid=$id");
+    foreach my $key(@category){
+      $dbh->do("INSERT INTO ROUTER(id,catid,advid) VALUES(NULL,$key,$id)");
+    }
+  }
+  my $adverts=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.text,ADVERT.till,ADVERT.link FROM ADVERT",'id');
+  $self->stash(adverts=>$adverts);
+  $self->render('list');
+};
+
+get '/edit/:id' => sub {
+  my $self=shift;
+  my $usr=$self->session('usr') || '';
+  return $self->redirect_to('login') unless $usr;
+  my $id=$self->param('id');
+  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.till,ADVERT.text,ADVERT.link FROM ADVERT WHERE id=$id",'id');
+  my $category=$dbh->selectall_hashref("SElECT CATEGORY.id,CATEGORY.name FROM CATEGORY",'id');
+  my $router=$dbh->selectall_arrayref("SELECT ROUTER.catid FROM ROUTER WHERE ROUTER.advid=$id");
+  $self->stash(advert=>$advert,
+               category=>$category,
+               router=>$router);
+  $self->render('edit');
 };
 
 get '/r/:id'=>sub{
   my $self=shift;
   my $linkid=$self->param('id');
-  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id as id,ADVERT.text as text,ADVERT.link as link FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid WHERE LINKS.id=$linkid",'id');
+  #$dbh->do("");
+  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id as id,ADVERT.text as text,ADVERT.link as link FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid
+                                     LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid
+                                     WHERE LINKS.id=$linkid ORDER BY ADVERT.SYSDATE LIMIT 1",'id');
   my $company=$dbh->selectall_hashref("SELECT  COMPANYREF.ID as id,COMPANYREF.ORGANIZATION as org,COMPANYREF.OGRN as ogrn,COMPANYREF.FNAME as company,
                                       COMPANYREF.URL as url,COMPANYREF.DT_MAIL as dt_mail,COMPANYREF.DT_CC as dt_cc,COMPANYREF.DT_TC as dt_tc,COMPANYREF.DT_CR as dt_cr,COMPANYREF.DT_PP as dt_pp,
                                       COMPANYREF.PT_BP as pt_bp,COMPANYREF.PT_EM as pt_em,COMPANYREF.PT_CH as pt_ch,COMPANYREF.PT_PM as pt_pm,COMPANYREF.PT_BC as pt_bc,COMPANYREF.PT_TP as pt_tp,

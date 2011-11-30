@@ -1,0 +1,21 @@
+%layout 'default', title 'Listing';
+<p><%=link_to 'Logout'=>'/logout'%></p>
+<p><%=link_to 'Create new advert'=>'/edit/0'%></p>
+<table border=1>
+  <tr class=caption>
+    <td>Id</td>
+    <td>Till</td>
+    <td>Text</td>
+    <td>Link</td>
+    <td>Edit</td>
+  </tr>
+%foreach my $id(keys %{$adverts}){
+  <tr>
+    <td><%=$adverts->{$id}{'id'}%></td>
+    <td><%=$adverts->{$id}{'till'}%></td>
+    <td><%=$adverts->{$id}{'text'}%></td>
+    <td><%=link_to $adverts->{$id}{'link'}=>"http://$adverts->{$id}{'link'}"=>(target=>'_blank')%></td>
+    <td><%=link_to 'Edit this advert'=>"/edit/$adverts->{$id}{'id'}"%></td>
+  </tr>
+%}
+</table>

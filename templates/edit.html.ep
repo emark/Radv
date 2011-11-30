@@ -1,0 +1,32 @@
+%layout 'default', title 'Listing';
+<p><%=link_to 'Listing'=>'/list'%></p>
+<%=form_for 'list'=>(method=>'post')=>begin%>
+%my $aid;
+%my $till;
+%my $text;
+%my $link;
+%foreach my $id(keys %{$advert}){
+  %$aid=$advert->{$id}{'id'};
+  %$till=$advert->{$id}{'till'};
+  %$text=$advert->{$id}{'text'};
+  %$link=$advert->{$id}{'link'};
+%}
+Till: <%=text_field 'till'=>$till=>(size=>10)%><br/>
+Text: <%=text_area 'text'=>(cols=>50,rows=>5)=>begin%><%=$text%><%end%><br/>
+Link: <%=text_field 'link'=>$link=>(size=>50)%><br/>
+<%=hidden_field 'id'=>$aid%><br/>
+<select size=8 multiple name="category">
+%foreach my $id(keys %{$category}){
+  <option value=<%=$category->{$id}{'id'}%>
+  %foreach my $key(@{$router}){
+    %if($key->[0]==$category->{$id}{'id'}){
+      selected
+    %}
+  %}
+  ><%=$category->{$id}{'name'}%>
+%}
+</select><br/>
+<!--Отключить <input type=checkbox name=dsiable><br/>-->
+Удалить <input type=checkbox name=del><br/>
+<%=submit_button 'Save'%>
+<%end%>

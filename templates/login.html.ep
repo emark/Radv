@@ -1,0 +1,7 @@
+%layout 'default', title 'login page';
+
+<%=tag 'P'=>$msg%>
+<%=form_for 'auth'=>(method=>'post')=>begin%>
+Passphrase: <%=password_field 'pass'%>
+<%=submit_button 'Login'%>
+<%end%>

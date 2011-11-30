@@ -1,13 +1,13 @@
 % layout 'default';
-% title 'Переход на внешний сайт...';
+% title 'Переход на сайт магазина...';
 
-<table boredr=0>
+<table border=0>
   <tr>
     <td>Вебпокупка</td>
-    <td class=infoblock>
+    <td>
 %foreach my $id(keys %{$advert}){
-  <i><%=$advert->{$id}{'text'}%>
-  <a href="http://test/cgi-bin/tools/ustat.pl?url=<%=$advert->{$id}{'link'}%>" target=_blank title='Откроется в новом окне'>Узнать больше</a>&nbsp;&#8594;</i>
+  <i class=infoblock><%=$advert->{$id}{'text'}%>
+  <a href="http://www.web2buy.ru/link/?url=<%=$advert->{$id}{'link'}%>" target=_blank title='Откроется в новом окне'>Узнать больше</a>&nbsp;&#8594;</i>
 %}
     </td>
   </tr>
@@ -38,7 +38,7 @@
   %if($company->{$id}{'refund'}){
     <p>Возврат товара надлежащего качества в течении <%=$company->{$id}{'refund'}%> дн.</p>
   %}
-  <p class=caption><b>Доставка:</b>
+  <p class=caption><b>Доставка</b>
   <ul>
 % my $n=0;
 % foreach my $key(@dtypes){
@@ -47,7 +47,7 @@
     %}
   %$n++;}
   </ul></p>
-  <p class=caption><b>Оплата:</b>
+  <p class=caption><b>Оплата</b>
   <ul>
 % $n=0;
 % foreach my $key(@ptypes){
@@ -56,6 +56,6 @@
     %}
   %$n++;}
   </ul></p>
-  Для перехода в магазин нажмите на ссылку <%=link_to "http://$company->{$id}{'url'}"=>"http://$company->{$id}{'url'}"=>(title=>'Откроется в этом же окне')%> <br/>
+  Для перехода в магазин нажмите на ссылку <%=link_to "http://$company->{$id}{'url'}"=>"http://$company->{$id}{'url'}"=>(title=>'Откроется в текущем окне')%> <br/>
   <p>Информация обновлена <%=$company->{$id}{'updateinfo'}%></p>
 %}
