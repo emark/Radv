@@ -1,6 +1,5 @@
 % layout 'default';
 % title 'Переход на сайт магазина...';
-
 <table border=0>
   <tr>
     <td>Вебпокупка</td>
@@ -56,6 +55,6 @@
     %}
   %$n++;}
   </ul></p>
-  Для перехода в магазин нажмите на ссылку <%=link_to "http://$company->{$id}{'url'}"=>"http://$company->{$id}{'url'}"=>(title=>'Откроется в текущем окне')%> <br/>
+  Для перехода в магазин нажмите на ссылку <%=link_to "http://$company->{$id}{'url'}"=>"http://www.web2buy.ru/link/?url=$company->{$id}{'url'}"=>(title=>'Откроется в текущем окне')%> <br/>
   <p>Информация обновлена <%=$company->{$id}{'updateinfo'}%></p>
 %}

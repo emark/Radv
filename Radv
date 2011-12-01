@@ -3,6 +3,7 @@ use strict;
 use lib "/home/hosting_locumtest/usr/local/lib/perl5";
 use Mojolicious::Lite;
 use DBI;
+use utf8;
 
 open (DBCONF,"< db.conf") || die "Error open dbconfig file";
 my @appconf=<DBCONF>;
@@ -15,7 +16,7 @@ $dbh->do('SET NAMES utf8');
 
 app->hook(before_dispatch => sub {
                my $self = shift;
-               $self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
+               #$self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
 	       }
 	  );
 app->secret($appconf[3]);
@@ -52,7 +53,7 @@ get '/list'=>sub{
   my $self=shift;
   my $usr=$self->session('usr') || '';
   return $self->redirect_to('login') unless $usr;
-  my $adverts=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.text,ADVERT.till,ADVERT.link FROM ADVERT",'id');
+  my $adverts=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.text,ADVERT.till,ADVERT.link,DATE(ADVERT.createdate) as createdate,ADVERT.counter FROM ADVERT",'id');
   $self->stash(adverts=>$adverts);
   $self->render('list');
 };
@@ -73,7 +74,7 @@ post '/list'=>sub{
   }elsif($id){
     $dbh->do("UPDATE ADVERT SET till=\"$till\",text=\"$text\",link=\"$link\" WHERE id=$id");
   }else{
-    $dbh->do("INSERT INTO ADVERT(id,till,text,link) VALUES(NULL,\"$till\",\"$text\",\"$link\")");
+    $dbh->do("INSERT INTO ADVERT(id,till,text,link,createdate,counter) VALUES(NULL,\"$till\",\"$text\",\"$link\",NOW(),0)");
     $id=$dbh->last_insert_id('','',"ADVERT",'id');
   }
   #Update router links
@@ -83,7 +84,7 @@ post '/list'=>sub{
       $dbh->do("INSERT INTO ROUTER(id,catid,advid) VALUES(NULL,$key,$id)");
     }
   }
-  my $adverts=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.text,ADVERT.till,ADVERT.link FROM ADVERT",'id');
+  my $adverts=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.text,ADVERT.till,ADVERT.link,DATE(ADVERT.createdate) as createdate,ADVERT.counter FROM ADVERT",'id');
   $self->stash(adverts=>$adverts);
   $self->render('list');
 };
@@ -93,7 +94,7 @@ get '/edit/:id' => sub {
   my $usr=$self->session('usr') || '';
   return $self->redirect_to('login') unless $usr;
   my $id=$self->param('id');
-  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.till,ADVERT.text,ADVERT.link FROM ADVERT WHERE id=$id",'id');
+  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.till,ADVERT.text,ADVERT.link,ADVERT.createdate FROM ADVERT WHERE id=$id",'id');
   my $category=$dbh->selectall_hashref("SElECT CATEGORY.id,CATEGORY.name FROM CATEGORY",'id');
   my $router=$dbh->selectall_arrayref("SELECT ROUTER.catid FROM ROUTER WHERE ROUTER.advid=$id");
   $self->stash(advert=>$advert,
@@ -105,15 +106,21 @@ get '/edit/:id' => sub {
 get '/r/:id'=>sub{
   my $self=shift;
   my $linkid=$self->param('id');
-  #$dbh->do("");
-  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id as id,ADVERT.text as text,ADVERT.link as link FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid
+  $dbh->begin_work || die $dbh->errstr;
+  my $advertid=$dbh->selectrow_array("SELECT ADVERT.id FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid
                                      LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid
-                                     WHERE LINKS.id=$linkid ORDER BY ADVERT.SYSDATE LIMIT 1",'id');
+                                     WHERE EXISTS (SELECT 1 FROM LINKS WHERE LINKS.id=$linkid) AND LINKS.id=\"$linkid\" AND ADVERT.till>NOW() ORDER BY ADVERT.showdate LIMIT 1");
+  $dbh->do("UPDATE ADVERT SET ADVERT.counter=ADVERT.counter+1,ADVERT.showdate=NOW() WHERE ADVERT.id=$advertid") if $advertid;
+  $dbh->commit || die $dbh->errstr;
+  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.till,ADVERT.text,ADVERT.link FROM ADVERT WHERE ADVERT.id=$advertid",'id') if $advertid;
   my $company=$dbh->selectall_hashref("SELECT  COMPANYREF.ID as id,COMPANYREF.ORGANIZATION as org,COMPANYREF.OGRN as ogrn,COMPANYREF.FNAME as company,
                                       COMPANYREF.URL as url,COMPANYREF.DT_MAIL as dt_mail,COMPANYREF.DT_CC as dt_cc,COMPANYREF.DT_TC as dt_tc,COMPANYREF.DT_CR as dt_cr,COMPANYREF.DT_PP as dt_pp,
                                       COMPANYREF.PT_BP as pt_bp,COMPANYREF.PT_EM as pt_em,COMPANYREF.PT_CH as pt_ch,COMPANYREF.PT_PM as pt_pm,COMPANYREF.PT_BC as pt_bc,COMPANYREF.PT_TP as pt_tp,
                                       DATE_FORMAT(COMPANYREF.SYSDATE,'%d.%m.%Y') as updateinfo,COMPANYREF.GOODBACKDAYS as refund
-                                      FROM COMPANYREF INNER JOIN LINKS ON COMPANYREF.ID=LINKS.companyid WHERE LINKS.id=$linkid",'id');
+                                      FROM COMPANYREF INNER JOIN LINKS ON COMPANYREF.ID=LINKS.companyid WHERE LINKS.id=\"$linkid\"",'id');
+  if(!%{$company}){
+    return $self->render(text=>'Ошибка. Вы пытаетесь открыть несуществующую ссылку.');
+  }
   $self->stash(advert=>$advert,
                company=>$company);
   $self->render('redirect');

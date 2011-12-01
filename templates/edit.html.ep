@@ -15,7 +15,7 @@ Till: <%=text_field 'till'=>$till=>(size=>10)%><br/>
 Text: <%=text_area 'text'=>(cols=>50,rows=>5)=>begin%><%=$text%><%end%><br/>
 Link: <%=text_field 'link'=>$link=>(size=>50)%><br/>
 <%=hidden_field 'id'=>$aid%><br/>
-<select size=8 multiple name="category">
+<select size=10 multiple name="category">
 %foreach my $id(keys %{$category}){
   <option value=<%=$category->{$id}{'id'}%>
   %foreach my $key(@{$router}){
@@ -26,7 +26,6 @@ Link: <%=text_field 'link'=>$link=>(size=>50)%><br/>
   ><%=$category->{$id}{'name'}%>
 %}
 </select><br/>
-<!--Отключить <input type=checkbox name=dsiable><br/>-->
 Удалить <input type=checkbox name=del><br/>
 <%=submit_button 'Save'%>
 <%end%>
