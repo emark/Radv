@@ -1,0 +1,16 @@
+% layout 'default';
+% title 'Переход по внешней ссылке';
+<table border=0>
+  <tr>
+    <td>Вебпокупка</td>
+    <td>
+%foreach my $id(keys %{$advert}){
+  <i class=infoblock><%=$advert->{$id}{'text'}%>
+  <a href="http://www.web2buy.ru/link/?url=<%=$advert->{$id}{'link'}%>" target=_blank title='Откроется в новом окне'>Узнать больше</a>&nbsp;&#8594;</i>
+%}
+    </td>
+  </tr>
+</table>
+<div class=shopinfo>
+    Переход по внешней ссылке <%=link_to "http://$link"=>"http://www.web2buy.ru/link/?url=$link"%>
+</div>
