@@ -1,7 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head><title><%= title %></title>
-  <%=stylesheet '/style.css'%>
+  <style>
+body{
+  font-family: sans-serif;
+  font-size: 10pt;
+  margin-top: 10px;
+}a:visited,a:active,a:hover,a:link{
+  color:#2252CC;
+}
+.infoblock{
+  font-family: serif;
+  background-color:#EDEDED;
+  padding:10px 10px 10px 10px;
+  margin: 50px 0px 50px 0px;
+}.caption{
+  font-weight: bold;
+}.shopinfo{
+  margin: 50px 0px 0px 0px;
+}
+  </style>
   </head>
   <body><%= content %></body>
 </html>
