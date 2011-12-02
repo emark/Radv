@@ -126,4 +126,23 @@ get '/r/:id/link'=>sub{
   $self->render('redirect');
 };
 
+get '/l/:id/link'=>sub{
+  my $self=shift;
+  my $linkid=$self->param('id');
+  $dbh->begin_work || die $dbh->errstr;
+  my $advertid=$dbh->selectrow_array("SELECT ADVERT.id FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid
+                                     LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid
+                                     WHERE EXISTS (SELECT 1 FROM LINKS WHERE LINKS.id=\"$linkid\") AND LINKS.id=\"$linkid\" AND ADVERT.till>NOW() ORDER BY ADVERT.showdate LIMIT 1");
+  $dbh->do("UPDATE ADVERT SET ADVERT.counter=ADVERT.counter+1,ADVERT.showdate=NOW() WHERE ADVERT.id=$advertid") if $advertid;
+  $dbh->commit || die $dbh->errstr;
+  my $advert=$dbh->selectall_hashref("SELECT ADVERT.id,ADVERT.till,ADVERT.text,ADVERT.link FROM ADVERT WHERE ADVERT.id=$advertid",'id') if $advertid;
+  my $link=$dbh->selectrow_array("SELECT l.content FROM LINKS l WHERE l.id=\"$linkid\"");
+  if(!$link){
+    return $self->render(text=>'Ошибка. Вы пытаетесь открыть несуществующую ссылку.');
+  }
+  $self->stash(advert=>$advert,
+               link=>$link);  
+  $self->render('link');
+};
+
 app->start;

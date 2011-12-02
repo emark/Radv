@@ -18,7 +18,7 @@ body{
 }.caption{
   font-weight: bold;
 }.shopinfo{
-  margin: 50px 0px 0px 0px;
+  margin: 30px 0px 0px 3px;
 }
   </style>
   </head>
