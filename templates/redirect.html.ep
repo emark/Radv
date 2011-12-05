@@ -1,6 +1,5 @@
 % layout 'default';
 % title 'Переход на сайт магазина...';
-ENV=<%=$penv%>
 <table border=0>
   <tr>
     <td>Вебпокупка</td>

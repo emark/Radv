@@ -12,5 +12,5 @@
   </tr>
 </table>
 <div class=shopinfo>
-    Переход по внешней ссылке <a href="http://www.web2buy.ru/link/?url=<%=$link%>" target=_self title='Откроется в текущем окне'><%=$link%></a>
+    Переход по внешней ссылке <a href="http://www.web2buy.ru/link/?url=<%=$link%>" target=_self title='Откроется в текущем окне'>http://<%=$link%></a>
 </div>
