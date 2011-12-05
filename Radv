@@ -16,7 +16,7 @@ $dbh->do('SET NAMES utf8');
 
 app->hook(before_dispatch => sub {
                my $self = shift;
-               $self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
+               #$self->req->url->base(Mojo::URL->new(q{http://go.web2buy.ru/}))
 	       }
 	  );
 app->secret($appconf[3]);
@@ -106,7 +106,15 @@ get '/edit/:id' => sub {
 get '/r/:id/link'=>sub{
   my $self=shift;
   my $linkid=$self->param('id');
-  my $env=$self->req;
+	my $url=$self->req->url;
+	my $referer=$ENV{'HTTP_REFERER'} || '';
+	$referer=~s/http:\/\///;#Drop http:// from Referer
+	my $user_agent=substr ($ENV{'HTTP_USER_AGENT'},0,80);
+	my $ENVLOG="\"$url\",
+							\"$ENV{'REMOTE_ADDR'}\",
+							\"$referer\",
+							\"$user_agent\"";
+	$dbh->do("INSERT INTO URLSTAT(DATE,TRACK,URL,IP,REFERER,USER_AGENT) VALUES(NOW(),'go',$ENVLOG)");
   $dbh->begin_work || die $dbh->errstr;
   my $advertid=$dbh->selectrow_array("SELECT ADVERT.id FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid
                                      LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid
@@ -122,17 +130,24 @@ get '/r/:id/link'=>sub{
   if(!%{$company}){
     return $self->render(text=>'Ошибка. Вы пытаетесь открыть несуществующую ссылку.');
   }
-  my $penv=$self->req->url->base->host;
-  #my $penv=$self->req->content->headers->host;
   $self->stash(advert=>$advert,
                company=>$company,
-               penv=>$penv);
+							 );
   $self->render('redirect');
 };
 
 get '/l/:id/link'=>sub{
   my $self=shift;
   my $linkid=$self->param('id');
+	my $url=$self->req->url;
+	my $referer=$ENV{'HTTP_REFERER'} || '';
+	$referer=~s/http:\/\///;#Drop http:// from Referer
+	my $user_agent=substr ($ENV{'HTTP_USER_AGENT'},0,80);
+	my $ENVLOG="\"$url\",
+							\"$ENV{'REMOTE_ADDR'}\",
+							\"$referer\",
+							\"$user_agent\"";
+	$dbh->do("INSERT INTO URLSTAT(DATE,TRACK,URL,IP,REFERER,USER_AGENT) VALUES(NOW(),'go',$ENVLOG)");
   $dbh->begin_work || die $dbh->errstr;
   my $advertid=$dbh->selectrow_array("SELECT ADVERT.id FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid
                                      LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid
