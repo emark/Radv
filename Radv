@@ -114,7 +114,7 @@ get '/r/:id/link'=>sub{
 							\"$ENV{'REMOTE_ADDR'}\",
 							\"$referer\",
 							\"$user_agent\"";
-	$dbh->do("INSERT INTO URLSTAT(DATE,TRACK,URL,IP,REFERER,USER_AGENT) VALUES(NOW(),'go',$ENVLOG)");
+	$dbh->do("INSERT INTO URLSTAT(DATE,TRACK,URL,IP,REFERER,USER_AGENT) VALUES(NOW(),'redirect',$ENVLOG)");
   $dbh->begin_work || die $dbh->errstr;
   my $advertid=$dbh->selectrow_array("SELECT ADVERT.id FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid
                                      LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid
@@ -147,7 +147,7 @@ get '/l/:id/link'=>sub{
 							\"$ENV{'REMOTE_ADDR'}\",
 							\"$referer\",
 							\"$user_agent\"";
-	$dbh->do("INSERT INTO URLSTAT(DATE,TRACK,URL,IP,REFERER,USER_AGENT) VALUES(NOW(),'go',$ENVLOG)");
+	$dbh->do("INSERT INTO URLSTAT(DATE,TRACK,URL,IP,REFERER,USER_AGENT) VALUES(NOW(),'redirect',$ENVLOG)");
   $dbh->begin_work || die $dbh->errstr;
   my $advertid=$dbh->selectrow_array("SELECT ADVERT.id FROM ADVERT LEFT JOIN ROUTER ON ADVERT.id=ROUTER.advid
                                      LEFT JOIN CATEGORY ON ROUTER.catid=CATEGORY.id LEFT JOIN LINKS ON CATEGORY.id=LINKS.catid
