@@ -1,16 +1,12 @@
 % layout 'default';
-% title 'Переход на сайт магазина...';
-<table border=0>
-  <tr>
-    <td>Вебпокупка</td>
-    <td>
+% title 'Переход по ссылке';
+
 %foreach my $id(keys %{$advert}){
-  <i class=infoblock><%=$advert->{$id}{'text'}%>
-  <a href="http://www.web2buy.ru/link/?url=<%=$advert->{$id}{'link'}%>" target=_blank title='Откроется в новом окне'>Узнать больше</a>&nbsp;&#8594;</i>
+<div id=infoblock>
+  <%=$advert->{$id}{'text'}%>
+  <a href="http://www.web2buy.ru/link/?url=<%=$advert->{$id}{'link'}%>" target=_blank title='Откроется в новом окне'>Узнать больше</a>&nbsp;&#8594;
+</div>
 %}
-    </td>
-  </tr>
-</table>
 <div class=shopinfo>
 %my %extinfo=('ПР'=>'Почта Росии',
 %	 'КК'=>'Курьерские компании',
@@ -28,7 +24,7 @@
 %my @dtypes=();
 %my @ptypes=();
 %foreach my $id(keys %{$company}){
-  <p class=caption>Детальная информация</p>
+  <p class=caption><b>Детальная информация</b></p>
   %@dtypes=($company->{$id}{'dt_mail'},$company->{$id}{'dt_cc'},$company->{$id}{'dt_tc'},$company->{$id}{'dt_cr'},$company->{$id}{'dt_pp'});
   %@ptypes=($company->{$id}{'pt_bp'},$company->{$id}{'pt_em'},$company->{$id}{'pt_ch'},$company->{$id}{'pt_pm'},$company->{$id}{'pt_bc'},$company->{$id}{'pt_tp'});
   Интернет-магазин <%=$company->{$id}{'org'}%><br/>
@@ -37,24 +33,33 @@
   %if($company->{$id}{'refund'}){
     <p>Возврат товара надлежащего качества возможен в течении <%=$company->{$id}{'refund'}%> дн.</p>
   %}
-  <p class=caption><b>Доставка</b>
+  <p><b>Доставка</b>
   <ul>
 % my $n=0;
+% my $s=0;
 % foreach my $key(@dtypes){
 %   if($key){
       <li><%=$extinfo{$dalias[$n]}%>
+      %$s=1;
     %}
   %$n++;}
+  %if($s==0){
+  <li>Информации нет
+  %}
   </ul></p>
-  <p class=caption><b>Оплата</b>
+  <p><b>Оплата</b>
   <ul>
-% $n=0;
+% $n=0,$s=0;
 % foreach my $key(@ptypes){
 %   if($key){
       <li><%=$extinfo{$palias[$n]}%>
+      %$s=1;
     %}
   %$n++;}
+  %if($s==0){
+  <li>Информации нет
+  %}
   </ul></p>
   Для перехода в магазин нажмите на ссылку <%=link_to "http://$company->{$id}{'url'}"=>"http://www.web2buy.ru/link/?url=$company->{$id}{'url'}"=>(title=>'Откроется в текущем окне')%> <br/>
-  <p>Информация обновлена <%=$company->{$id}{'updateinfo'}%></p>
+  <p style="font-size:10px">Информация обновлена <%=$company->{$id}{'updateinfo'}%></p>
 %}
