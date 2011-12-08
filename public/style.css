@@ -1,0 +1,27 @@
+body{
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 11pt;
+  margin-top: 10px;
+  background-color:#eeeedd;
+}a:visited,a:active,a:hover,a:link{
+  color:#9c2726;
+}#infoblock{
+  background-color:#ABC5CE;
+  padding: 10px 0px 10px 0px;
+  margin-top: 10px;
+  color:#FFFFFF;
+  text-align: center;
+}#logo{
+  font-size:	30px;
+}.shopinfo{
+  margin: 30px 0px 0px 3px;
+}
+#content{
+  margin: 30px 0px 30px 30px;
+  padding: 20px 30px 30px 30px;
+  background-color: #FFF;
+  width:650px;
+}#logo .subcaption{
+  color:#7A7A7A;
+  font-size:11pt;
+}
