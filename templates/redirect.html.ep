@@ -2,6 +2,7 @@
 % title 'Переход по ссылке';
 
 %foreach my $id(keys %{$advert}){
+<p class=infocaption>реклама</p>
 <div id=infoblock>
   <%=$advert->{$id}{'text'}%>
   <a href="http://www.web2buy.ru/link/?url=<%=$advert->{$id}{'link'}%>" target=_blank title='Откроется в новом окне'>Узнать больше</a>&nbsp;&#8594;

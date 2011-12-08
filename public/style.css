@@ -24,4 +24,8 @@ body{
 }#logo .subcaption{
   color:#7A7A7A;
   font-size:11pt;
+}.infocaption{
+  font-size:10pt;
+  text-align:right;
+  margin: 0px 0px 0px 0px;
 }
