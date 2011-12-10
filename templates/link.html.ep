@@ -4,7 +4,7 @@
 %foreach my $id(keys %{$advert}){
 <p class=infocaption>реклама</p>
 <p class=infoblock>
-  <a href="http://www.web2buy.ru/link/?url=<%=$advert->{$id}{'link'}%>" target=_blank title='Откроется в новом окне'><%=$advert->{$id}{'text'}%></a>
+  <a href="http://www.web2buy.ru/link/?url=<%=$advert->{$id}{'link'}%>" style="color:#676767;" target=_blank title='Откроется в новом окне'><%=$advert->{$id}{'text'}%></a>
 </p>
 %}
 <div class=shopinfo>
