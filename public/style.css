@@ -1,14 +1,13 @@
 body{
   font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 11pt;
-  margin-top: 10px;
+  margin-top: 0px;
   background-color:#eeeedd;
 }a:visited,a:active,a:hover,a:link{
   color:#9c2726;
-}#infoblock{
-  background-color:#ABC5CE;
-  padding: 10px 0px 10px 0px;
-  margin-top: 10px;
+}.infoblock{
+  background-color:#ffff7d;
+  padding: 0px 0px 0px 0px;
   color:#FFFFFF;
   text-align: center;
 }#logo{
@@ -27,5 +26,5 @@ body{
 }.infocaption{
   font-size:10pt;
   text-align:right;
-  margin: 0px 0px 0px 0px;
+  color:#808080;
 }
