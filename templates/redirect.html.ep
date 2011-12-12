@@ -24,16 +24,16 @@
 %my @dtypes=();
 %my @ptypes=();
 %foreach my $id(keys %{$company}){
-  <p><b>Детальная информация</b></p>
+  <p><b>Детальная информация</b><ul>
   %@dtypes=($company->{$id}{'dt_mail'},$company->{$id}{'dt_cc'},$company->{$id}{'dt_tc'},$company->{$id}{'dt_cr'},$company->{$id}{'dt_pp'});
   %@ptypes=($company->{$id}{'pt_bp'},$company->{$id}{'pt_em'},$company->{$id}{'pt_ch'},$company->{$id}{'pt_pm'},$company->{$id}{'pt_bc'},$company->{$id}{'pt_tp'});
-  Интернет-магазин <%=$company->{$id}{'org'}%><br/>
-  Юридическое лицо: <%=$company->{$id}{'company'}%><br/>
-  ОГРН: <%=$company->{$id}{'ogrn'}%><br/>
+  <li>Интернет-магазин <%=$company->{$id}{'org'}%><br/>
+  <li>Юридическое лицо: <%=$company->{$id}{'company'}%><br/>
+  <li>ОГРН: <%=$company->{$id}{'ogrn'}%><br/>
   %if($company->{$id}{'refund'}){
-    Возврат товара надлежащего качества возможен в течении <%=$company->{$id}{'refund'}%> дн.<br/>
+    <li>Возврат товара надлежащего качества возможен в течении <%=$company->{$id}{'refund'}%> дн.<br/>
   %}
-  <p><b>Доставка</b></p>
+  </ul></p><p><b>Доставка</b>
   <ul>
 % my $n=0;
 % my $s=0;
@@ -46,8 +46,8 @@
   %if($s==0){
   <li>Информации нет
   %}
-  </ul>
-  <p><b>Оплата</b></p>
+  </ul></p>
+  <p><b>Оплата</b>
   <ul>
 % $n=0,$s=0;
 % foreach my $key(@ptypes){
@@ -59,8 +59,8 @@
   %if($s==0){
   <li>Информации нет
   %}
-  </ul>
+  </ul></p>
   <p align=center><%=link_to "Переход в интернет-магазин"=>"http://www.web2buy.ru/link/?url=$company->{$id}{'url'}"=>(class=>'button',style=>'color:#FFF',title=>'Откроется в текущем окне',alt=>'Переход в интернет-магазин')%></p>
-  <p style="font-size:8pt">Информация получена из открытых источников. Дата обновления <%=$company->{$id}{'updateinfo'}%></p>
+  <p class=update>Информация получена из открытых источников. Дата обновления <%=$company->{$id}{'updateinfo'}%></p>
 %}
 </div><!--#linkinfo-->
