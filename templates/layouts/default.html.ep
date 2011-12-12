@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head><title><%= title %></title>
-  <%=stylesheet '/style.css'%>
+  <%=stylesheet '/style121211.css'%>
   </head>
   <body>
     <div id=content>
       <div id=logo>
-        <b>Вебпокупка</b>
+        <b><a href="http://www.web2buy.ru" title="Интернет-журнал">Вебпокупка</a></b>
         <p class=subcaption>Переход на внешние сайты</p>
       </div>
       <%= content %>
-    <div>
+    </div>
   </body>
 </html>
