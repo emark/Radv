@@ -60,7 +60,9 @@
   <li>Информации нет
   %}
   </ul></p>
-  <p align=center><%=link_to "Переход в интернет-магазин"=>"http://www.web2buy.ru/link/?url=$company->{$id}{'url'}"=>(class=>'button',style=>'color:#FFF',title=>'Откроется в текущем окне',alt=>'Переход в интернет-магазин')%></p>
+  <div id=button>
+  <p align=center><%=link_to "Переход в интернет-магазин"=>"http://www.web2buy.ru/link/?url=$company->{$id}{'url'}"=>(title=>'Откроется в текущем окне',alt=>'Переход в интернет-магазин')%></p>
+  </div> <!--button-->
   <p class=update>Информация получена из открытых источников. Дата обновления <%=$company->{$id}{'updateinfo'}%></p>
 %}
 </div><!--#linkinfo-->

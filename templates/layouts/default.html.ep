@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head><title><%= title %></title>
-  <%=stylesheet '/style121211.css'%>
+  <%=stylesheet '/style131211.css'%>
   </head>
   <body>
     <div id=content>
